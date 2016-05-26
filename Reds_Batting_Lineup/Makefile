@@ -1,19 +1,12 @@
-# Makefile for Ethernet Broadcast and Listen Test Programs
-all: broadcast_packet ethernet_listen
+# Makefile for batting_lineup.cpp
+all: batting_lineup
 #
-broadcast_packet: broadcast_packet.o
-	gcc broadcast_packet.o -o broadcast_packet.exe
+batting_lineup: batting_lineup.o batting_roster.o
+	g++ batting_lineup.o batting_roster.o -o batting_lineup
 #
-broadcast_packet.o: broadcast_packet.c
-	gcc -c broadcast_packet.c
+batting_lineup.o: batting_lineup.cpp
+	g++ -c batting_lineup.cpp
 #
-ethernet_listen: ethernet_listen.o
-	gcc ethernet_listen.o -o ethernet_listen.exe
-#
-ethernet_listen.o: ethernet_listen.c
-	gcc -c ethernet_listen.c
-#
-clean:
-	rm ethernet_listen.o broadcast_packet.o ethernet_listen.exe broadcast_packet.exe
-#
+batting_roster.o: batting_roster.cpp
+	g++ -c batting_roster.cpp
 # end of Makefile

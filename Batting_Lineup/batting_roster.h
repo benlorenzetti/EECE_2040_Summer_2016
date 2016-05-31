@@ -15,7 +15,7 @@ const int MAX_NAME_LENGTH = 256;
  * table at:
  *   http://espn.go.com/mlb/team/stats/batting/_/name/cin/cincinnati-reds
  * It includes two character arrays for the players' name, numeric members
- * for each batting statistic, and a pointer for building a linked lists.
+ * for each batting statistic, and pointers for building a linked lists.
 */
 struct player
 {
@@ -39,6 +39,7 @@ struct player
   float ops;  // OBP + SLG
   float owar; // Offensive Wins Above Replacement
   struct player *next_player;
+  struct player *prev_player;
 };
 
 /* 
@@ -49,12 +50,20 @@ struct player
  * return: number of lines read from the file / size of newly allocated
  *         linked list of players
 */
-int import_tab_delimited_stats (const char *, struct player **);
+int import_tab_delimited_stats( const char *, struct player ** );
 
 /*
  * @param: A linked list of player structs to be printed
 */
-void print_lineup (struct player *);
+void print_lineup( struct player * );
+
+/*
+ * @param: pointer to pointer looking at the first element of the linked list
+ * @param: first player to be exchanged with the 2nd parameter player in a list
+ * @param: second player to be echanged with parameter 1.
+ * return: pointer to the linked list
+*/
+struct player* swap_players( struct player **, struct player *, struct player * );
 
 
 

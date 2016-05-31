@@ -22,9 +22,11 @@ int import_tab_delimited_stats (const char *filename, struct player **ret_ptr)
   */
   int player_count = 0;
   struct player *plr = NULL;
-  struct player **linked_list_ptr = ret_ptr;
   do
   {
+    // Save the current end of the linked list before allocating a new element
+    struct player *prev_plr = plr;
+
     // Allocate new player struct
     if ( !( plr = (struct player*) malloc ( sizeof(struct player) ) ) )
     {
@@ -57,14 +59,23 @@ int import_tab_delimited_stats (const char *filename, struct player **ret_ptr)
     if (scan_error)
     {
       printf( "Warning: Unexpected table format on line %d.\n", player_count);
-      free (plr); // release the incomplete record and then
-      *linked_list_ptr = NULL; // terminate the linked list
+      free (plr); // release incomplete record and return what was successful
       return player_count;
     }
 
-    // Add plr to the linked list and increment the pointer and player_count
-    *linked_list_ptr = plr;
-    linked_list_ptr = &( plr->next_player );
+    // Add plr to the linked list
+    if (!prev_plr) // if the first element, then there is no prev_plr.
+    {
+      *ret_ptr = plr;
+      plr->prev_player = NULL;
+    }
+    else
+    {
+      prev_plr->next_player = plr;
+      plr->prev_player = prev_plr;
+    }
+    
+    // Increment the player count for a useful return value
     player_count++;
   
     // Test if there is more in the file, if so then repeat
@@ -102,3 +113,31 @@ void print_lineup (struct player *batting_list)
   return;
 }
 
+struct player* swap_players (
+  struct player **list,
+  struct player *plr1,
+  struct player *plr2)
+{
+  // Make local copies of player 1's list pointers
+  struct player *next_copy = plr1->next_player;
+  struct player *prev_copy = plr1->prev_player;
+
+  // Swap the next & prev pointers of plr1 and plr2
+  plr1->next_player = plr2->next_player;
+  plr1->prev_player = plr2->prev_player;
+  plr2->next_player = next_copy;
+  plr2->prev_player = prev_copy;
+
+  // Test if the list has a new leading member
+  if ( ! plr1->prev_player )
+  {
+    *list = plr1;
+    return plr1;
+  }
+  if ( ! plr2->prev_player )
+  {
+    *list = plr2;
+  }
+  
+  return *list;
+}

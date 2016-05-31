@@ -9,4 +9,6 @@ batting_lineup.o: batting_lineup.cpp
 #
 batting_roster.o: batting_roster.cpp
 	g++ -c batting_roster.cpp
+clean:
+	rm batting_roster.o batting_lineup.o batting_lineup
 # end of Makefile

@@ -42,7 +42,11 @@ struct player
   struct player *prev_player;
 };
 
-/* 
+/* Parses batting statistics records from a tab-delimited text file and
+ * constructs a linked list of player structs from the data. The data file
+ * should have no header rows and the columns should correspond in order to
+ * the members of the player struct.
+ *
  * @param: filename containing tab-delimited batting stats copied from the
  *         table at
  *         http://espn.go.com/mlb/team/stats/batting/_/name/cin/cincinnati-reds
@@ -52,20 +56,41 @@ struct player
 */
 int import_tab_delimited_stats( const char *, struct player ** );
 
-/*
+/* Prints a linked list of player structs in tabular form to standard output
+ *
  * @param: A linked list of player structs to be printed
 */
 void print_lineup( struct player * );
 
-/*
- * @param: pointer to pointer looking at the first element of the linked list
- * @param: first player to be exchanged with the 2nd parameter player in a list
- * @param: second player to be echanged with parameter 1.
- * return: pointer to the linked list
+/* Use to reorder a player linked list by swapping two elements. Takes care of
+ * all the pointers in the list that must be changed.
+ *
+ * @param: the first element of the linked list (may be changed by the swap)
+ * @param: first player to be exchanged with the next parameter player.
+ * @param: second player to be echanged.
+ * return: a pointer advanced to the next player after the new player 1
 */
 struct player* swap_players( struct player **, struct player *, struct player * );
 
+/* Searches linearly in the forward direction to find highest batting average.
+ *
+ * @param: linked list of players to be searched
+ * return: address of player with greatest batting average
+*/
+struct player* find_best_table_setter ( struct player * );
 
+/* Searches linearly in the forward direction to find highest SLG.
+ *
+ * @param: linked list of players to be searched
+ * return: address of player with best slugging ratio
+*/
+struct player* find_best_slugger ( struct player * );
+
+/* Truncates a linked list and releases players after truncation point
+ *
+ * @param: first player to be released, i.e. the trucation point
+*/
+void free_list( struct player *list );
 
 
 #endif

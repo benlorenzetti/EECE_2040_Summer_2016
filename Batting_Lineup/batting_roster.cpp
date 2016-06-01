@@ -90,7 +90,7 @@ int import_tab_delimited_stats (const char *filename, struct player **ret_ptr)
 void print_lineup (struct player *batting_list)
 {
   // Print a Header Row
-  printf ("\n%-12s %-12s ", "Player", "Name");
+  printf ("%-12s %-12s ", "Player", "Name");
   printf ("%3s %3s %3s %3s %3s %3s ", "GP", "AB", "R", "H", "2B", "3B");
   printf ("%3s %3s %3s %3s %3s %3s ", "HR", "RBI", "TB", "BB", "SO", "SB");
   printf ("\t%s \t%s \t%s \t%s \t%s \n", "BA", "OBP", "SLG", "OPS", "OWAR");
@@ -118,26 +118,148 @@ struct player* swap_players (
   struct player *plr1,
   struct player *plr2)
 {
-  // Make local copies of player 1's list pointers
-  struct player *next_copy = plr1->next_player;
-  struct player *prev_copy = plr1->prev_player;
+  printf ("player_swap(): ");
 
-  // Swap the next & prev pointers of plr1 and plr2
-  plr1->next_player = plr2->next_player;
-  plr1->prev_player = plr2->prev_player;
-  plr2->next_player = next_copy;
-  plr2->prev_player = prev_copy;
+  // Make local copies of the 4 prev and next pointers of plr1 and plr2
+  struct player *plr1_next_cpy = plr1->next_player;
+  struct player *plr1_prev_cpy = plr1->prev_player;
+  struct player *plr2_next_cpy = plr2->next_player;
+  struct player *plr2_prev_cpy = plr2->prev_player;
 
-  // Test if the list has a new leading member
-  if ( ! plr1->prev_player )
+  // Update pointers of all 4 players on either side of plr1 and 2
+  if ( plr1_next_cpy ) // is there a player after plr1 to update?
   {
-    *list = plr1;
-    return plr1;
+    (plr1->next_player)->prev_player = plr2;
   }
-  if ( ! plr2->prev_player )
+  if ( plr1_prev_cpy ) // is there a player before plr1 to update?
+  {
+    (plr1->prev_player)->next_player = plr2;
+  }
+  if ( plr2_next_cpy ) // is there a player after plr2 to update?
+  {
+    (plr2->next_player)->prev_player = plr1;
+  }
+  if ( plr2_prev_cpy ) // is there a player before plr2 to update?
+  {
+    (plr2->prev_player)->next_player = plr1;
+  }
+
+  // Update the list if the first element will change
+  if ( plr1 == *list )
   {
     *list = plr2;
   }
-  
-  return *list;
+  else if ( plr2 == *list )
+  {
+    *list = plr1;
+  }
+
+  // Update/swap the 4 pointers in plr1 and plr2
+  plr1->next_player = plr2_next_cpy;
+  plr1->prev_player = plr2_prev_cpy; 
+  plr2->next_player = plr1_next_cpy;
+  plr2->prev_player = plr1_prev_cpy; 
+
+  // If plr1 and plr2 were already next to one another, need to fix
+  // the self referencing pointers the were created
+  if ( plr1->next_player == plr1 )
+  {
+    plr1->next_player = plr2;
+  }
+  if ( plr1->prev_player == plr1 )
+  {
+    plr1->prev_player = plr2;
+  }
+  if ( plr2->next_player == plr2 )
+  {
+    plr2->next_player = plr1;
+  }
+  if ( plr2->prev_player == plr2 )
+  {
+    plr2->prev_player = plr1;
+  }
+
+  printf ("swapped %s %s with ", plr2->first_name, plr2->last_name);
+  printf ("%s %s, ", plr1->first_name, plr1->last_name);
+
+  // Advance pointer the the next player after the new player 1 and return
+  struct player *ret_ptr = plr2->next_player;
+  printf ("and returning pointer to %s %s\n", ret_ptr->first_name, ret_ptr->last_name);
+  return ret_ptr;
+}
+
+struct player* find_best_table_setter ( struct player *search_ptr )
+{
+  if ( !search_ptr )
+  {
+    printf ("Warning: find_best_table_settler() called on NULL list.\n");
+    return NULL;
+  }
+  printf ("find_best_table_setter(): starting at ");
+  printf ("%s %s, ", search_ptr->first_name, search_ptr->last_name);
+  struct player *best_setter = NULL;
+  double best_batting_average = 0;
+  while( search_ptr )
+  {
+    if ( best_batting_average < search_ptr->batting_average )
+    {
+      best_batting_average = search_ptr->batting_average;
+      best_setter = search_ptr;
+    }
+    search_ptr = search_ptr->next_player;
+  }
+  printf ("the best setter is %s ", best_setter->first_name);
+  printf ("%s (BA = %.3f)\n", best_setter->last_name, best_setter->batting_average);
+  return best_setter;
+}
+
+
+struct player* find_best_slugger ( struct player *search_ptr )
+{
+  if ( !search_ptr )
+  {
+    printf ("Warning: find_best_slugger() called on NULL list.\n");
+    return NULL;
+  }
+  printf ("find_best_slugger(): starting at ");
+  printf ("%s %s, ", search_ptr->first_name, search_ptr->last_name);
+  struct player *best_slugger = NULL;
+  double best_slg = 0;
+  while( search_ptr )
+  {
+    if ( best_slg < search_ptr->slg )
+    {
+      best_slg = search_ptr->slg;
+      best_slugger = search_ptr;
+    }
+    search_ptr = search_ptr->next_player;
+  }
+  printf ("the best slugger is %s ", best_slugger->first_name);
+  printf ("%s (SLG = %.3f)\n", best_slugger->last_name, best_slugger->batting_average);
+  return best_slugger;
+}
+
+void free_list( struct player *list )
+{
+  if ( !list )
+  {
+    return;
+  }
+  printf ("free_list(): freeing list starting at ");
+  printf ("%s %s\n", list->first_name, list->last_name);
+
+  // Terminate pointer of previous element, if exists
+  if ( list->prev_player )
+  {
+    list->prev_player->next_player = NULL;
+  }
+
+  // Free each element of the list
+  struct player *next_player = NULL;
+  while ( list )
+  {
+    next_player = list->next_player;
+    free (list);
+    list = next_player;
+  }
 }

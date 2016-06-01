@@ -1,6 +1,33 @@
-The program batting_lineup.cpp demonstrates the use of structs in C/C++.
+*******************************************************************************
+EECE2040 Data Structures Programming
+Homework 1: Demonstration of C structs using baseball batting statistics
+Ben Lorenzetti
+Jun. 01, 2016
+*******************************************************************************
 
-It reads a whitespace delimited text file containing batting statistics for
+
+batting_roster.cpp  - Structure for storing player statistics and a set of
+                      functions for building linked-lists of players, i.e. a
+                      roster or batting lineup
+batting_roster.h    - Interface and documentation for batting_roster.cpp
+batting_lineup.cpp  - Program that uses batting_roster functions to create a
+                      batting lineup using stats from a tab-delimted text file
+Makefile            - for gcc
+Reds_Statistics.txt - sample data file with proper format
+
+*******************************************************************************
+
+
+To compile and run on Linux:
+    $ make
+    $ ./batting_lineup Reds_Statistics.txt
+
+
+*******************************************************************************
+
+  The program batting_lineup.cpp demonstrates the use of structs in C/C++.
+
+  It reads a whitespace delimited text file containing batting statistics for
 any MLB team. The statisics should be in a headerless table with one row per
 player and a total of 18 columns. Transposed, in order, the 18 should be:
 
@@ -24,13 +51,11 @@ _N_ _Type___	__Statistic__	_Abbreviation_
 17. (double)	OBP + SLG =	OPS
 18. (double)	Offensive Wins Above Replacement	OWAR
 
-There is a Makefile for compiling the program with gcc on Linux.
+  The data design is a structure containing a player's name, stats, and
+two pointers for building linked lists. There a functions for building
+a linked list of players from a data file, for printing player lists,
+for swapping elementss of a player list, for freeing/truncating lists,
+and linear search functions for maximizing batting average and slugging pct.
 
-The program reads in the batting statistics and then creates a list
-of player structures corresponding to each row from the data file.
-The list is sorted into a good batting lineup and then printed.
+  More documentation is in the interface file batting_roster.h.
 
-To run, pass as an arguement the name of the text data file.
-
-$ make
-$ ./batting_lineup Reds_Batting_Statistics.txt

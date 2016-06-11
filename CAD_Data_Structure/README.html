@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<html>
+<head>
+<title>Homework 2</title>
+</head>
+
+<body>
+
+<h1>Data Structure for a CAD Program</h1>
+<p>
+Homework # 2<br/>
+EECE2040 U2016<br/>
+Ben Lorenzetti<br/>
+June 11, 2016<br/>
+</p>
+
+<p>
+Dear Grader:
+I love plain old C and am not convinced that object oriented programming
+is worth it.
+Then again, the whole object[<a href="#note1">1</a>] of this assignment is
+learning OOP, so I have decided to use C in an objecty way and then observe
+what advantages this offered and what advantages C++ would have offered.
+</p>
+
+<p>
+C++ got started while Bjarne Stroustrup was working on "C with Classes",
+so I think this is a very natural way to learn OOP and where its value lies.
+As an example of some OO techniques I have used, I have parametric polymorphism
+in a generic container library similar to the std::vector class in C++.
+[<a href=#note3">3</a>]
+Also I use subtype polymorphism with a union of several structs representing
+different geometric objects. Finally I have ad-hoc polymorphism in an area()
+function that works on several of the subtypes.
+</p>
+
+<footnote>
+  <hr/>
+  <ol>
+    <li id="note1">
+      Object, what an overloaded word in computer science, am I right?
+    </li>
+    <li>
+      Of course, both "overloaded" and "word" could also be considered
+      overloaded words.
+    </li>
+    <li id="note3">
+      Yet another overloaded word: vector; what if I want to store geometric vectors
+      in a dynamic array?
+    </li>
+  </ol>
+  <hr/>
+</footnote>
+
+
+<h2>Table of Contents</h2>
+<table class="contents">
+  <tr>
+    <td><a href="#geometric-objects">Geometric Objects</a></td>
+    <td>
+      A set of unions, structures, arrays, and memory rules for representing
+      geometric objects in cartesian space.
+    </td>
+    <td><a href="vectlib.h">vectlib.h</a>
+  </tr>
+  <tr>
+    <td><a href="#ldD-and-area-functions">Length and Area Functions</a></td>
+    <td>
+      How common geometric/arithmetic operations can be implemented on the
+      above data structure.
+    </td>
+    <td>
+      <a href="vectlib.h">vectlib.h</a> and <a href="vectlib.c">vectlib.c</a>
+    </td>
+  </tr>
+  <tr>
+    <td><a href="#vectlor-library">Generic Container Library</a></td>
+    <td>
+      A dynamic array library with funtionality similar to C++'s std::vector
+      class, including generic type size and constructors/destructors.
+    </td>
+    <td>
+      <a href="vectlor.h">vectlor.h</a> and <a href="vectlor.c">vectlor.c</a>
+    </td>
+  </tr>
+  <tr>
+    <td><a href="#demo-program">A Floorplan Demo Program</a></td>
+    <td></td>
+    <td>
+      <a href="floorplan_demo.c">floorplan_demo.c</a> and
+      <a href="Makefile">Makefile</a>
+    </td>
+  </tr>
+</table>
+
+
+</body>
+</html>

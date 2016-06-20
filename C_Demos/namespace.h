@@ -14,12 +14,19 @@
   #define UNIQUE_PREFIX_DOT_NAMESPACE UNIQUE_PREFIX_DEFAULT_NAMESPACE
 #endif
 
+static int unique_prefix_push_back (void*, const void*);
+static void* unique_prefix_at (void*, int);
+
 typedef struct {
   int (*const push_back)(void*, const void*);
   void* (*const at)(void*, int);
 } unique_prefix_namespace_struct;
 
 extern unique_prefix_namespace_struct const UNIQUE_PREFIX_DOT_NAMESPACE;
+
+unique_prefix_namespace_struct const UNIQUE_PREFIX_DOT_NAMESPACE = {
+  unique_prefix_push_back, unique_prefix_at
+};
 
 // From this point on could be in an implementation file.
 
@@ -31,9 +38,5 @@ static int unique_prefix_push_back (void* dest, const void* src) {
 static void* unique_prefix_at (void* dest, int n) {
   printf ("in unique_prefix_at().\n");
 }
-
-unique_prefix_namespace_struct const UNIQUE_PREFIX_DOT_NAMESPACE = {
-  unique_prefix_push_back, unique_prefix_at
-};
 
 #endif

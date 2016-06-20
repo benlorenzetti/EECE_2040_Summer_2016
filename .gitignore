@@ -5,7 +5,7 @@
 # Ignore Object Files and Executables
 *.o
 *.obj
-
+*.out
 *.exe
 
 # Core latex/pdflatex auxiliary files:

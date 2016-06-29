@@ -1,0 +1,1 @@
+doWar.o: doWar.cpp deck.h card.h war.h

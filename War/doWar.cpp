@@ -12,9 +12,8 @@
 using namespace std;
 
 int main(){
-  Card::setTrumpSuit(SPADES);
-  Card c1(HEARTS, 1);
-  Card c2(SPADES, 2);
-  cout << (c1 > c2) << endl;
+  Deck player1;
+  player1.add_52_cards();
+  player1.print_deck();
   return 0;
 }

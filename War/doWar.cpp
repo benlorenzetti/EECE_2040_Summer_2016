@@ -12,6 +12,9 @@
 using namespace std;
 
 int main(){
-  // Fill in code here!
+  Card::setTrumpSuit(SPADES);
+  Card c1(HEARTS, 1);
+  Card c2(SPADES, 2);
+  cout << (c1 > c2) << endl;
   return 0;
 }

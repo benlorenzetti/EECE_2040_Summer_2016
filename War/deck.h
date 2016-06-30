@@ -7,6 +7,8 @@
 #include <stdlib.h>
 #include <stdexcept>
 #include <stack>
+#include <vector>   // for shuffle only
+#include <stdlib.h> // for rand()
 #include "card.h"
 
 using namespace std;
@@ -51,7 +53,27 @@ void Deck::print_deck() const{
 }
 
 void Deck::shuffle_deck() {
-
+  // Copy the stack into a shuffling vector
+  vector<Card> shuffle_vector;
+  while( !d.empty() ){
+    shuffle_vector.push_back(d.top());
+    d.pop();
+  }
+  // The shuffle operation swaps two random cards in the vector and
+  // this is repeated n times.
+  const int n = 1000;
+  for(int i=0; i<n; i++){
+    int index1 = rand() % shuffle_vector.size();
+    int index2 = rand() % shuffle_vector.size();
+    Card temp = shuffle_vector[index1];
+    shuffle_vector[index1] = shuffle_vector[index2];
+    shuffle_vector[index2] = temp;
+  }
+  // Copy the cards from the vector back into the stack
+  while( !shuffle_vector.empty() ){
+    d.push(shuffle_vector.back());
+    shuffle_vector.pop_back();
+  }
 }
 
 void Deck::swap_decks (Deck &d2) {

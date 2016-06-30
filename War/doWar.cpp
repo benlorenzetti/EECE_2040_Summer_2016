@@ -15,5 +15,8 @@ int main(){
   Deck player1;
   player1.add_52_cards();
   player1.print_deck();
+  cout << "Shuffling...\n";
+  player1.shuffle_deck();
+  player1.print_deck();
   return 0;
 }

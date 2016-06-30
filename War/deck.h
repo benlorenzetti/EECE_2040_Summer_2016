@@ -6,7 +6,7 @@
 #include <iostream>
 #include <stdlib.h>
 #include <stdexcept>
-#include <stack>
+#include <queue>
 #include <vector>   // for shuffle only
 #include <stdlib.h> // for rand()
 #include "card.h"
@@ -15,19 +15,20 @@ using namespace std;
 
 class Deck{  
   private:
-  stack<Card> d;
+  queue<Card> d;
 
   public:
 
-  int getSize() const {return d.size();}
+  unsigned int get_size() const {return d.size();}
   void print_deck() const;
 
   void add_52_cards();
   void shuffle_deck();
-  void swap_decks(Deck &);
+  void collect_deck(Deck &);
 
-  Card draw() {Card c = d.top(); d.pop(); return c;}
+  Card draw() {Card c = d.front(); d.pop(); return c;}
   void collect(Card c) {d.push(c);}
+  Card table_top() {return d.back();}
 };
 
 void Deck::add_52_cards() {
@@ -45,9 +46,9 @@ void Deck::add_52_cards() {
 }
 
 void Deck::print_deck() const{
-  stack<Card> d_copy = d;
+  queue<Card> d_copy = d;
   while( !d_copy.empty() ){
-    cout << d_copy.top() << endl;
+    cout << d_copy.front() << endl;
     d_copy.pop();
   }
 }
@@ -56,7 +57,7 @@ void Deck::shuffle_deck() {
   // Copy the stack into a shuffling vector
   vector<Card> shuffle_vector;
   while( !d.empty() ){
-    shuffle_vector.push_back(d.top());
+    shuffle_vector.push_back(d.front());
     d.pop();
   }
   // The shuffle operation swaps two random cards in the vector and
@@ -76,23 +77,10 @@ void Deck::shuffle_deck() {
   }
 }
 
-void Deck::swap_decks (Deck &d2) {
-  stack<Card> inverted_d1, inverted_d2;
-  while( !d.empty() ){
-    inverted_d1.push( d.top() );
-    d.pop();
-  }
-  while( !d2.d.empty() ){
-    inverted_d2.push( d2.d.top() );
+void Deck::collect_deck (Deck &d2) {
+  while(!d2.d.empty()) {
+    d.push(d2.d.front());
     d2.d.pop();
-  }
-  while( !inverted_d1.empty() ){
-    d.push( inverted_d1.top() );
-    inverted_d1.pop();
-  }
-  while( !inverted_d2.empty() ){
-    d2.d.push( inverted_d2.top() );
-    inverted_d2.pop();
   }
 }
 

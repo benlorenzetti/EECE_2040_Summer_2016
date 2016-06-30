@@ -16,7 +16,7 @@
 
 using namespace std;
 
-int runWar(int limit){
+long runWar(int limit){
   // Get a fresh deck, shuffle it, and deal it evenly into 2 piles on the table
   Deck dealer, table1, table2;
   dealer.add_52_cards();
@@ -27,7 +27,6 @@ int runWar(int limit){
     else
       table2.collect(dealer.draw());
   }
-
   // Player 1 and 2 pick up their decks
   Deck player1, player2;
   player1.collect_deck(table1);
@@ -35,7 +34,7 @@ int runWar(int limit){
 
   // Begin Play, quiting when either player runs out of cards or
   // the round limit is reached
-  int round = 0;
+  long round = 0;
   while(player1.get_size() && player2.get_size() && round < limit)
   {
     // Place fighting cards on the table
@@ -57,11 +56,12 @@ int runWar(int limit){
       if(player1.get_size() <= 3 || player2.get_size() <= 3) {
         // At least one player does not have enough cards, so declare winner
         if(player1.get_size() > player2.get_size()) {
-          cout << "Player 1 wins (during a war) after " << round << " rounds\n";
+          cout << "Player 1 wins (during a war) after " << round << " rounds" << endl;
           return round;
         }
         else if(player2.get_size() > player1.get_size()) {
-          cout << "Player 2 wins (during a war) after " << round << " rounds\n";
+          cout << "Player 2 wins (during a war) after " << round << " rounds" << endl;
+          return round;
         }
         else {
           cout << "         Tie (both players run out of cards during a war)";
@@ -81,15 +81,14 @@ int runWar(int limit){
   }// end round loop
   // Determine who won and report results
   if (player1.get_size() > player2.get_size()) {
-    cout << "Player 1 wins after " << round << " rounds.\n";
+    cout << "Player 1 wins after " << round << " rounds." << endl;
   }
   else if(player2.get_size() > player1.get_size()) {
-    cout << "Player 2 wins after " << round << " rounds.\n";
+    cout << "Player 2 wins after " << round << " rounds." << endl;
   }
   else {
-    cout << "         Tie game after " << round << " rounds.\n";
+    cout << "         Tie game after " << round << " rounds." << endl;
   }
   return round;
 }
-
 #endif

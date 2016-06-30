@@ -18,7 +18,8 @@ class Deck{
   queue<Card> d;
 
   public:
-
+  Deck() {}
+  ~Deck();
   unsigned int get_size() const {return d.size();}
   void print_deck() const;
 
@@ -30,6 +31,13 @@ class Deck{
   void collect(Card c) {d.push(c);}
   Card table_top() {return d.back();}
 };
+
+Deck::~Deck () {
+  // Deallocate every element in the queue. Why is this not a function?
+  while(d.size() > 0) {
+    d.pop();
+  }
+}
 
 void Deck::add_52_cards() {
   for(int i=0; i<52; i++) {

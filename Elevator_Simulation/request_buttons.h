@@ -29,8 +29,8 @@
 
 class hall_calls {
   public:
-    hall_calls(unsigned int, const int*);
-//  (1) number of serviced floors, (2) list of serviced floors
+    hall_calls(const int*, unsigned int);
+//  (1) list of serviced floors, (2) number of floors in list
     void request_up(int);
     void request_down(int);
     void clear_up(int);
@@ -42,9 +42,9 @@ class hall_calls {
     it returns the floor number parameter to indicate none.
 */
     int find_first_below(int);
-/*  The same as find_first_above() except looking in down calls
+/*  Similar to find_first_above() except looking in down calls
 */
-    int get_service_distanc(int, int);
+    int get_service_distance(int, int);
 /*  Takes in two floor numbers and returns the number of potential
     stops between these two floors. Returns zero if one or both
     floors is not serviced by this set of elevators.  
@@ -68,3 +68,5 @@ class dest_buttons {
   private:
     std::set<int> stop_requests;
 };
+
+#endif

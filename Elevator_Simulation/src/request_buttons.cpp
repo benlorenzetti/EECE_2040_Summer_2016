@@ -59,6 +59,8 @@ int hall_buttons::find_first_above(int floor_number) {
 int hall_buttons::find_first_below(int floor_number) {
   set<int>::iterator it;
   it = down_calls.end();
+  if(it == down_calls.begin())
+    return floor_number;
   do {
     it--;
   } while (it != down_calls.begin() && *it >= floor_number);
@@ -105,3 +107,37 @@ dest_buttons::dest_buttons() {
 void dest_buttons::clear_all() {
   stop_requests.clear();
 }
+
+void dest_buttons::clear(int floor_number) {
+  set<int>::iterator it;
+  if((it = stop_requests.find(floor_number)) != stop_requests.end());
+    stop_requests.erase(it);
+}
+
+int dest_buttons::find_first_below(int floor_number) {
+  set<int>::iterator it;
+  it = stop_requests.end();
+  if(it == stop_requests.begin())
+    return floor_number;
+  do {
+    it--;
+  } while (it != stop_requests.begin() && *it >= floor_number);
+  if(*it < floor_number)
+    return *it;
+  else
+    return floor_number;
+ 
+}
+
+int dest_buttons::find_first_above(int floor_number) {
+  set<int>::iterator it;
+  it = stop_requests.begin();
+  while(it != stop_requests.end() && *it <= floor_number)
+    it++;
+  if(it == stop_requests.end())
+    return floor_number;
+  else
+    return *it;
+}
+
+

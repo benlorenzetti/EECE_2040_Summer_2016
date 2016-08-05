@@ -22,7 +22,12 @@ int main() {
   car_controller car2("car2", &erc_buttons, 6, FLOOR_HEIGHT, EMPTY_MASS,
                       MAX_ACCEL, MAX_SPEED, STOP_TIME, STOP_TOLERANCE);
 
-  for(int i=0; i<2; i++) {
+  // Make some calls
+  erc_buttons.request_up(5);
+  erc_buttons.request_down(7);
+
+  for(int i=0; i<1000; i++) {
+    car_controller::global_time += 0.1;
     car1.simulate(0.1, true);
     car2.simulate(0.1, true);
   }

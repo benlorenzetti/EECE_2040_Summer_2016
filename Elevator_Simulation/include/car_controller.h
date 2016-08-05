@@ -43,6 +43,9 @@ class car_controller {
     /* stop_tolerance = maximum allowable height difference between
        hallway floor and car floor when stopped, in meters */
   public:
+    // Global time is useful for printing debug messages for the state
+    // machine. Nothing is harmed if someone reaches in and changes it.
+    static double global_time;
     // Declare an Elevator Controller
     car_controller(
       std::string, // name
@@ -66,6 +69,8 @@ class car_controller {
                   // returns a floor number or CAR_NOT_AT_A_FLOOR
     // Get the torque being applied to the motor by controller (N*m)
     double get_torque();
+    
+    double accel_to_stop();
     // Get car direction, if doors are open, and mass of people onboard
     bool going_up();
     bool going_down();

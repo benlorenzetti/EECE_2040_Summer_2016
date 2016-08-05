@@ -62,7 +62,7 @@ class dest_buttons {
   public:
     dest_buttons();
     void request_stop(int);   // (1) floor number
-    void clear_stop(int);     // (2) floor number
+    void clear(int);          // (2) floor number
     void clear_all();         // clears stop_requests
     int find_first_above(int);
 //  (1) current floor; (return) nearest floor above (1) in stop_req

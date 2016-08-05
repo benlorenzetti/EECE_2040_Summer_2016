@@ -25,11 +25,12 @@ int main() {
   // Make some calls
   erc_buttons.request_up(5);
   erc_buttons.request_down(7);
+  erc_buttons.request_up(4);
 
   for(int i=0; i<10000; i++) {
-    car_controller::global_time += 0.1;
-    car1.simulate(0.1, true);
-    car2.simulate(0.1, true);
+    car_controller::global_time += 0.01;
+    car1.simulate(0.01, true);
+    car2.simulate(0.01, true);
   }
   
   return 0; 

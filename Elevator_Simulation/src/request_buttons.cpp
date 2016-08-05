@@ -84,11 +84,10 @@ int hall_buttons::find_highest_above(int floor_number) {
 int hall_buttons::find_lowest_below(int floor_number) {
   set<int>::iterator it;
   it = up_calls.begin();
-  it++;
-  if(it != up_calls.end() && *it < floor_number)
-    return *it;
-  else
+  if(it == up_calls.end())
     return floor_number;
+  else
+    return *it;
 }
 
 int hall_buttons::get_service_distance(int origin, int dest) {

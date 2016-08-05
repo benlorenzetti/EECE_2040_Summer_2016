@@ -73,7 +73,9 @@ int car_controller::current_floor() {
 double car_controller::accel_to_stop() {
   double dest_pos = dest_floor * floor_height;
   double accel = (velocity*velocity) / (2*(dest_pos-position));
-  if(velocity > 0)
+  if(velocity > 0 && (dest_pos > position))
+    accel *= -1;
+  if(velocity < 0 && (dest_pos < position))
     accel *= -1;
   return accel;
 }
@@ -104,64 +106,88 @@ void car_controller::simulate(double time, bool print) {
     case Home:
       home_next_state_logic();
       if(print && prev_state != state) {
-        cout << "[" << name << "] switches state from [Home] to ["
-          << state_string(state) << "] at floor "
-          << current_floor() << " at " << ((int)global_time / 3600)
-          << ":" << (((int)global_time / 60) % 60) << ":"
-          << ((int)global_time % 60) << endl;
+        cout << "t = " << global_time << ", " << name << " (current_floor = "
+        << position / floor_height << "):  Home --> " << state_string(state) << endl;
       }
     break;
     case Upstop:
       upstop_next_state_logic();
       if(print && prev_state != state) {
-        cout <<"["<<name<<"] switches state from [Upstop] to ["
-          << state_string(state) << "] at floor " << position / floor_height
-          << " at " << ((int)global_time/3600) << ":"
-          << (((int)global_time/60)%60) << ":" << ((int)global_time %60) << endl;
+        cout << "t = " << global_time << ", " << name << " (current_floor = "
+        << current_floor() << "):  Upstop --> " << state_string(state)
+        << " (dest = " << dest_floor << ")\n";
       }
     break;
     case Upstart:
       upstart_next_state_logic();
       if(print && prev_state != state) {
-        cout <<"["<<name<<"] switches state from [Upstart] to ["
-          << state_string(state) << "] going to floor " << dest_floor
-          << " at " << ((int)global_time/3600) << ":"
-          << (((int)global_time/60)%60) << ":" << ((int)global_time %60) << endl;
+        cout << "t = " << global_time << ", " << name << " (current_floor = "
+        << position / floor_height << "):  Upstart --> " << state_string(state) 
+        << ", dest = " << dest_floor << endl;
       }
     break;
     case Upaccel:
       upaccel_next_state_logic();
       if(print && prev_state != state) {
-        cout <<"["<<name<<"] switches state from [Upaccel] to ["
-          << state_string(state) << "] at floor " << position / floor_height
-          << " at " << ((int)global_time/3600) << ":"
-          << (((int)global_time/60)%60) << ":" << ((int)global_time %60) << endl;
+        cout << "t = " << global_time << ", " << name << " (current_floor = "
+        << position / floor_height << "):  Upaccel --> " << state_string(state) << endl;
       }
     break;
     case Uptravel:
       uptravel_next_state_logic();
       if(print && prev_state != state) {
-        cout <<"["<<name<<"] switches state from [Uptravel] to ["
-          << state_string(state) << "] at floor " << position / floor_height
-          << " at " << ((int)global_time/3600) << ":"
-          << (((int)global_time/60)%60) << ":" << ((int)global_time %60) << endl;
+        cout << "t = " << global_time << ", " << name << " (current_floor = "
+        << position / floor_height << "):  Uptravel --> " << state_string(state) << endl;
       }
     break;
     case Updecel:
       updecel_next_state_logic();
       if(print && prev_state != state) {
-        cout <<"["<<name<<"] switches state from [Updecel] to ["
-          << state_string(state) << "] at floor " << position / floor_height
-          << " at " << ((int)global_time/3600) << ":"
-          << (((int)global_time/60)%60) << ":" << ((int)global_time %60) << endl;
+        cout << "t = " << global_time << ", " << name << " (current_floor = "
+        << position / floor_height << "):  Updecel --> " << state_string(state) << endl;
       }
     break;
-
-
-
-    default:;
-//      cerr << "Error: controller is in unrecognized state.\n";
-//      exit(EXIT_FAILURE);
+    case Downstop:
+      downstop_next_state_logic();
+      if(print && prev_state != state) {
+        cout << "t = " << global_time << ", " << name << " (current_floor = " 
+        << current_floor() << "):  Downstop --> " << state_string(state) 
+        << " (dest = " << dest_floor << ")\n";
+      }
+    break;
+    case Downstart:
+      downstart_next_state_logic();
+      if(print && prev_state != state) {
+        cout << "t = " << global_time << ", " << name << " (current_floor = "
+        << position / floor_height << "):  Downstart --> " << state_string(state) 
+        << ", dest = " << dest_floor << endl;
+      }
+    break;
+    case Downaccel:
+      downaccel_next_state_logic();
+      if(print && prev_state != state) {
+        cout << "t = " << global_time << ", " << name << " (current_floor = "
+        << position / floor_height << "):  Downaccel --> " << state_string(state) << endl;
+      }
+    break;
+    case Downtravel:
+      downtravel_next_state_logic();
+      if(print && prev_state != state) {
+        cout << "t = " << global_time << ", " << name << " (current_floor = "
+        << position / floor_height << "):  Downtravel --> " << state_string(state) << endl;
+      }
+    break;
+    case Downdecel:
+      downdecel_next_state_logic();
+      if(print && prev_state != state) {
+        cout << "t = " << global_time << ", " << name << " (current_floor = "
+        << position / floor_height << "):  Downdecel --> " << state_string(state) << endl;
+      }
+    break;
+    default:
+      cerr << "Error: controller is in unrecognized state.\n";
+      exit(EXIT_FAILURE);
+    break;
   }
 }
 
@@ -216,7 +242,7 @@ void car_controller::upstop_next_state_logic() {
      || stop_requests.find_first_above(current_floor()) > current_floor()
      || call_requests->find_highest_above(current_floor()) > current_floor())
   {
-    state = Upstart;
+    upstart_next_state_logic(); // goto upstart in zero time
     return;
   }
   /* If there are no requests above the current floor (proven by reaching
@@ -226,7 +252,8 @@ void car_controller::upstop_next_state_logic() {
      || call_requests->find_first_below(current_floor()) < current_floor()
      || stop_requests.find_first_below(current_floor()) < current_floor())
   {
-    state = Downstart;
+    state = Downstop;
+    timer = 0;
     return;
   }
   /* Finally if there are absolutely no requests, the car should try
@@ -234,10 +261,45 @@ void car_controller::upstop_next_state_logic() {
   if(current_floor() == home_floor)
     state = Home;
   else if(home_floor < current_floor())
-    state = Downstop;
+    downstart_next_state_logic();
   else
-    state = Upstart;
+    upstart_next_state_logic();
 }
+
+void car_controller::downstop_next_state_logic() {
+  if(timer < stop_time)
+    return; // stay stopped until stop_time has passed
+  /* Determine if there is any requests for floors below the current
+     floor, whether it be uncleared hall down calls, destination
+     requests, or uncleared hall up calls (from a lower floor). */
+  if(call_requests->find_first_below(current_floor()) < current_floor()
+     || stop_requests.find_first_below(current_floor()) < current_floor()
+     || call_requests->find_lowest_below(current_floor()) < current_floor())
+  {
+    downstart_next_state_logic(); // goto Downstart in zero time
+    return;
+  }
+  /* If there are no requests below the current floor (proven by reaching
+     this point), then the car should switch direction to up if there
+     are requests above this floor */
+  if(call_requests->find_highest_above(current_floor()) > current_floor()
+     || call_requests->find_first_above(current_floor()) > current_floor()
+     || stop_requests.find_first_above(current_floor()) > current_floor())
+  {
+    state = Upstop;
+    timer = 0;
+    return;
+  }
+  /* Finally if there are absolutely no requests, the car should try
+     to return home. */
+  if(current_floor() == home_floor)
+    state = Home;
+  else if(home_floor > current_floor())
+    upstart_next_state_logic();
+  else
+    downstart_next_state_logic();
+}
+
 
 void car_controller::upstart_next_state_logic() {
   state = Upaccel;
@@ -283,6 +345,50 @@ void car_controller::upstart_next_state_logic() {
   dest_floor = home_floor;
 }
 
+void car_controller::downstart_next_state_logic() {
+  state = Downaccel;
+  /* It has already been determined to go down. Now need to choose
+     the best destination floor (the closest one with a down call or
+     stop request) or in liu of that, the lowest up request
+     or home. */
+  int closest_call, closest_stop;
+  closest_call = call_requests->find_first_below(current_floor());
+  closest_stop = stop_requests.find_first_below(current_floor());
+  if(closest_call == current_floor() && closest_stop == current_floor())
+    {}
+  else if(closest_call == current_floor()) {
+    dest_floor = closest_stop;
+    stop_requests.clear(closest_stop);
+    return;
+  }
+  else if(closest_stop == current_floor()) {
+    dest_floor = closest_call;
+    call_requests->clear_down(closest_call);
+    return;
+  }
+  else if(closest_stop > closest_call) {
+    dest_floor = closest_stop;
+    stop_requests.clear(closest_stop);
+    return;
+  }
+  else {
+    dest_floor = closest_call;
+    call_requests->clear_down(closest_call);
+    stop_requests.clear(closest_call);
+    return;
+  }
+  /*  If reach this point, then there were no down requests. Now try
+      to goto a lower up request. */
+  int lowest_up_request = call_requests->find_lowest_below(current_floor());
+  if(lowest_up_request < current_floor()) {
+    dest_floor = lowest_up_request;
+    call_requests->clear_up(lowest_up_request);
+    return;
+  }
+  /*  If reach this point, then just go home. */
+  dest_floor = home_floor;
+}
+
 void car_controller::upaccel_next_state_logic() {
   acceleration = max_accel;
   if(fabs(accel_to_stop()) >= max_accel)
@@ -291,10 +397,24 @@ void car_controller::upaccel_next_state_logic() {
     state = Uptravel;
 }
 
+void car_controller::downaccel_next_state_logic() {
+  acceleration = (-1) * max_accel;
+  if(fabs(accel_to_stop()) >= max_accel)
+    state = Downdecel;
+  else if(fabs(velocity) >= max_speed)
+    state = Downtravel;
+}
+
 void car_controller::uptravel_next_state_logic() {
   acceleration = 0;
   if(fabs(accel_to_stop()) >= max_accel)
     state = Updecel;
+}
+
+void car_controller::downtravel_next_state_logic() {
+  acceleration = 0;
+  if(fabs(accel_to_stop()) >= max_accel)
+    state = Downdecel;
 }
 
 void car_controller::updecel_next_state_logic() {
@@ -302,7 +422,18 @@ void car_controller::updecel_next_state_logic() {
   if(current_floor() == dest_floor) {
     velocity = 0;
     acceleration = 0;
+    timer = 0;
     state = Upstop;
   }
 }
 
+void car_controller::downdecel_next_state_logic() {
+  acceleration = accel_to_stop();
+//cout << "downdecel: accel = " << acceleration << ", current_floor = " << current_floor() << ", dest = " << dest_floor << endl;
+  if(current_floor() == dest_floor) {
+    velocity = 0;
+    acceleration = 0;
+    timer = 0;
+    state = Downstop;
+  }
+}

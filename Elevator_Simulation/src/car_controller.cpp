@@ -93,8 +93,10 @@ double car_controller::accel_to_stop() {
 void car_controller::simulate(double time, bool print) {
   // Calculate new timer, position, and velocity
   timer += time;
-  velocity = velocity - (acceleration * time);
-  position = position + (velocity*time) - (acceleration/2)*time*time;
+  velocity = velocity + (acceleration * time);
+  position = position + (velocity*time) + (acceleration/2)*time*time;
+
+//cout << "v = " << velocity << ", y = " << position << ", a = " << acceleration << endl;
 
   // Increment the horriffic state machine
   control_state prev_state = state;
@@ -113,7 +115,7 @@ void car_controller::simulate(double time, bool print) {
       upstop_next_state_logic();
       if(print && prev_state != state) {
         cout <<"["<<name<<"] switches state from [Upstop] to ["
-          << state_string(state) << "] at floor " << current_floor()
+          << state_string(state) << "] at floor " << position / floor_height
           << " at " << ((int)global_time/3600) << ":"
           << (((int)global_time/60)%60) << ":" << ((int)global_time %60) << endl;
       }
@@ -131,7 +133,7 @@ void car_controller::simulate(double time, bool print) {
       upaccel_next_state_logic();
       if(print && prev_state != state) {
         cout <<"["<<name<<"] switches state from [Upaccel] to ["
-          << state_string(state) << "] at floor " << current_floor()
+          << state_string(state) << "] at floor " << position / floor_height
           << " at " << ((int)global_time/3600) << ":"
           << (((int)global_time/60)%60) << ":" << ((int)global_time %60) << endl;
       }
@@ -139,8 +141,8 @@ void car_controller::simulate(double time, bool print) {
     case Uptravel:
       uptravel_next_state_logic();
       if(print && prev_state != state) {
-        cout <<"["<<name<<"] switches state from [Upaccel] to ["
-          << state_string(state) << "] at floor " << current_floor()
+        cout <<"["<<name<<"] switches state from [Uptravel] to ["
+          << state_string(state) << "] at floor " << position / floor_height
           << " at " << ((int)global_time/3600) << ":"
           << (((int)global_time/60)%60) << ":" << ((int)global_time %60) << endl;
       }
@@ -148,8 +150,8 @@ void car_controller::simulate(double time, bool print) {
     case Updecel:
       updecel_next_state_logic();
       if(print && prev_state != state) {
-        cout <<"["<<name<<"] switches state from [Upaccel] to ["
-          << state_string(state) << "] at floor " << current_floor()
+        cout <<"["<<name<<"] switches state from [Updecel] to ["
+          << state_string(state) << "] at floor " << position / floor_height
           << " at " << ((int)global_time/3600) << ":"
           << (((int)global_time/60)%60) << ":" << ((int)global_time %60) << endl;
       }
@@ -212,7 +214,7 @@ void car_controller::upstop_next_state_logic() {
      requests, or uncleared hall down calls (from a higher floor). */
   if(call_requests->find_first_above(current_floor()) > current_floor()
      || stop_requests.find_first_above(current_floor()) > current_floor()
-     || call_requests->find_first_below(call_requests->get_top()) > current_floor())
+     || call_requests->find_highest_above(current_floor()) > current_floor())
   {
     state = Upstart;
     return;
@@ -220,7 +222,7 @@ void car_controller::upstop_next_state_logic() {
   /* If there are no requests above the current floor (proven by reaching
      this point), then the car should switch direction to down if there
      are requests below this floor */
-  if(call_requests->find_first_above(call_requests->get_bottom()) != call_requests->get_bottom()
+  if(call_requests->find_lowest_below(current_floor()) < current_floor()
      || call_requests->find_first_below(current_floor()) < current_floor()
      || stop_requests.find_first_below(current_floor()) < current_floor())
   {
@@ -247,7 +249,7 @@ void car_controller::upstart_next_state_logic() {
   lowest_call_request = call_requests->find_first_above(current_floor());
   lowest_stop_request = stop_requests.find_first_above(current_floor());
   if(lowest_call_request == current_floor() && lowest_stop_request == current_floor())
-  {}
+    {}
   else if(lowest_call_request == current_floor()) {
     dest_floor = lowest_stop_request;
     stop_requests.clear(lowest_stop_request);
@@ -271,7 +273,7 @@ void car_controller::upstart_next_state_logic() {
   }
   /*  If reach this point, then there were no up requests. Now try
       to goto a higher down request. */
-  int highest_down_request = call_requests->find_first_below(call_requests->get_top());
+  int highest_down_request = call_requests->find_highest_above(current_floor());
   if(highest_down_request > current_floor()) {
     dest_floor = highest_down_request;
     call_requests->clear_down(highest_down_request);
@@ -296,6 +298,11 @@ void car_controller::uptravel_next_state_logic() {
 }
 
 void car_controller::updecel_next_state_logic() {
-
+  acceleration = accel_to_stop();
+  if(current_floor() == dest_floor) {
+    velocity = 0;
+    acceleration = 0;
+    state = Upstop;
+  }
 }
 

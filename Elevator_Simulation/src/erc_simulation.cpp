@@ -26,7 +26,7 @@ int main() {
   erc_buttons.request_up(5);
   erc_buttons.request_down(7);
 
-  for(int i=0; i<1000; i++) {
+  for(int i=0; i<10000; i++) {
     car_controller::global_time += 0.1;
     car1.simulate(0.1, true);
     car2.simulate(0.1, true);

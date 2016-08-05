@@ -64,12 +64,14 @@ class car_controller {
       double, // time increment to advance this car
       bool    // select whether you want a printout of activity
     );
-    // Test if car's position is within stop_tolerance of a floor
+    //  Test if car's position is within stop_tolerance of a floor
     int current_floor();
                   // returns a floor number or CAR_NOT_AT_A_FLOOR
-    // Get the torque being applied to the motor by controller (N*m)
+    //  Get the torque being applied to the motor by controller (N*m)
     double get_torque();
-    
+    /*  Get the acceleration rate required in order to slow the car
+     *  at a constant rate such that the car reaches its dest_floor
+     *  with exactly zero velocity: a smooth stop. */  
     double accel_to_stop();
     // Get car direction, if doors are open, and mass of people onboard
     bool going_up();

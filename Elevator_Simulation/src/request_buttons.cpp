@@ -70,6 +70,27 @@ int hall_buttons::find_first_below(int floor_number) {
     return floor_number;
 }
 
+int hall_buttons::find_highest_above(int floor_number) {
+  set<int>::iterator it;
+  if((it = down_calls.end()) == down_calls.begin())
+    return floor_number;
+  it--;
+  if(*it > floor_number)
+    return *it;
+  else
+    return floor_number;
+}
+
+int hall_buttons::find_lowest_below(int floor_number) {
+  set<int>::iterator it;
+  it = up_calls.begin();
+  it++;
+  if(it != up_calls.end() && *it < floor_number)
+    return *it;
+  else
+    return floor_number;
+}
+
 int hall_buttons::get_service_distance(int origin, int dest) {
   set<int>::iterator origin_it, dest_it;
   origin_it = serviced_floors.find(origin);
@@ -88,16 +109,14 @@ int hall_buttons::get_service_distance(int origin, int dest) {
   return distance;
 }
 
-int hall_buttons::get_bottom() {
-  set<int>::iterator it;
-  it = serviced_floors.begin();
-  return *it;
+int hall_buttons::get_top() {
+  set<int>::iterator it = serviced_floors.end();
+  return *(--it);
 }
 
-int hall_buttons::get_top() {
-  set<int>::iterator it;
-  it = serviced_floors.end();
-  return *(--it);
+int hall_buttons::get_bottom() {
+  set<int>::iterator it = serviced_floors.begin();
+  return *it;
 }
 
 dest_buttons::dest_buttons() {

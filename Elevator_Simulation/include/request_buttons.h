@@ -29,21 +29,32 @@
 
 class hall_buttons {
   public:
+    /*  param1: a list of floors which will have call buttons
+        param2: list size */
     hall_buttons(const int*, unsigned int);
-//  (1) list of serviced floors, (2) number of floors in list
+    /*  The next four functions allow humans and car_controllers to
+        interface with the internal sets of service requests.
+        @param1: a floor number */
     void request_up(int);
     void request_down(int);
     void clear_up(int);
     void clear_down(int);
-//  for above 4 functions: (1) a floor number
+    /*  Gets the floor number of the first active up request above
+        the current floor, or current floor if no such requests.
+        @param1: current floor */
     int find_first_above(int);
-/*  Takes the current floor number of a car and returns either the
-    nearest floor with an up hall call, or if there are none then
-    it returns the floor number parameter to indicate none.
-*/
+    /*  Gets the floor number of the first active down request below
+        the current floor, or current floor if no such requests.
+        @param1: current floor */
     int find_first_below(int);
-/*  Similar to find_first_above() except looking in down calls
-*/
+    /*  Gets the floor of the highest down request above the current
+        floor, or the current floor if no such requests exist.
+        @param1: current floor */
+    int find_highest_above(int);
+    /*  Gets the floor of the lowest up request also below the
+        current floor, or current floor if no such requests exist.
+        @param1: current floor */
+    int find_lowest_below(int);
     int get_service_distance(int, int);
 /*  Takes in two floor numbers and returns the number of potential
     stops between these two floors. Returns zero if one or both

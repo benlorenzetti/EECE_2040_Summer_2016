@@ -24,21 +24,13 @@ car_controller::car_controller(
   hall_buttons *building_interface,
   int home_floor,
   double floor_height,
-  double empty_mass,
-  double max_accel,
-  double max_speed,
-  double stop_time,
-  double stop_tolerance
+  elevator_model car_model
 ) : call_requests(building_interface),
     home_floor(home_floor),
     floor_height(floor_height),
-    empty_mass(empty_mass),
-    max_accel(max_accel),
-    max_speed(max_speed), 
-    stop_time(stop_time),
-    stop_tolerance(stop_tolerance)
+    car_model(car_model)
 {
-  this->mass = empty_mass;
+  this->mass = car_model.empty_mass;
   this->position = home_floor * floor_height;
   this->velocity = 0;
   this->acceleration = 0;
@@ -58,7 +50,7 @@ car_controller::car_controller(
 */
 int car_controller::current_floor() {
   int closest_floor = (int)(position / floor_height + 0.5);
-  if(fabs(closest_floor * floor_height - position) <= stop_tolerance)
+  if(fabs(closest_floor * floor_height - position) <= car_model.stop_tolerance)
     return closest_floor;
   else
     return POSITION_BETWEEN_FLOORS;
@@ -233,7 +225,7 @@ void car_controller::home_next_state_logic() {
 }
 
 void car_controller::upstop_next_state_logic() {
-  if(timer < stop_time)
+  if(timer < car_model.stop_time)
     return; // stay stopped until stop_time has passed
   /* Determine if there is any requests for floors above the current
      floor, whether it be uncleared hall up calls, destination
@@ -267,7 +259,7 @@ void car_controller::upstop_next_state_logic() {
 }
 
 void car_controller::downstop_next_state_logic() {
-  if(timer < stop_time)
+  if(timer < car_model.stop_time)
     return; // stay stopped until stop_time has passed
   /* Determine if there is any requests for floors below the current
      floor, whether it be uncleared hall down calls, destination
@@ -390,30 +382,30 @@ void car_controller::downstart_next_state_logic() {
 }
 
 void car_controller::upaccel_next_state_logic() {
-  acceleration = max_accel;
-  if(fabs(accel_to_stop()) >= max_accel)
+  acceleration = car_model.max_accel;
+  if(fabs(accel_to_stop()) >= car_model.max_accel)
     state = Updecel;
-  else if(velocity >= max_speed)
+  else if(velocity >= car_model.max_speed)
     state = Uptravel;
 }
 
 void car_controller::downaccel_next_state_logic() {
-  acceleration = (-1) * max_accel;
-  if(fabs(accel_to_stop()) >= max_accel)
+  acceleration = (-1) * car_model.max_accel;
+  if(fabs(accel_to_stop()) >= car_model.max_accel)
     state = Downdecel;
-  else if(fabs(velocity) >= max_speed)
+  else if(fabs(velocity) >= car_model.max_speed)
     state = Downtravel;
 }
 
 void car_controller::uptravel_next_state_logic() {
   acceleration = 0;
-  if(fabs(accel_to_stop()) >= max_accel)
+  if(fabs(accel_to_stop()) >= car_model.max_accel)
     state = Updecel;
 }
 
 void car_controller::downtravel_next_state_logic() {
   acceleration = 0;
-  if(fabs(accel_to_stop()) >= max_accel)
+  if(fabs(accel_to_stop()) >= car_model.max_accel)
     state = Downdecel;
 }
 

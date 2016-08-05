@@ -18,8 +18,17 @@ enum control_state {
 };
 std::string state_string(control_state);
 
+typedef struct {
+    const double empty_mass;
+    const double max_cargo_mass;
+    const double max_accel;
+    const double max_speed;
+    const double stop_time;
+    const double stop_tolerance;   
+} elevator_model;
+
 class car_controller {
-  private:
+  protected:
     // Physical Model Variables
     double mass;         // kilograms
     double position;     // meters
@@ -32,14 +41,10 @@ class car_controller {
     const int home_floor;
     int dest_floor;
     double timer;
+    const double floor_height;
     // Elevator Class/Model Variables
     std::string name;
-    const double floor_height;
-    const double empty_mass;
-    const double max_accel;
-    const double max_speed;
-    const double stop_time;
-    const double stop_tolerance;
+    elevator_model car_model;
     /* stop_tolerance = maximum allowable height difference between
        hallway floor and car floor when stopped, in meters */
   public:
@@ -52,11 +57,7 @@ class car_controller {
       hall_buttons *, // the building interface for this car
       int,    // home floor
       double, // floor height (m)
-      double, // empty mass
-      double, // max_accel (m/s^2)
-      double, // max_speed (m/s)
-      double, // stop_time (s)
-      double  // stop_tolerance (m)
+      elevator_model car_model
     );
     // Simulate the elevator's motion and controller state for an
     // increment of time. 
@@ -74,10 +75,9 @@ class car_controller {
      *  with exactly zero velocity: a smooth stop. */  
     double accel_to_stop();
     // Get car direction, if doors are open, and mass of people onboard
-    bool going_up();
-    bool going_down();
-    bool doors_open();
-    double get_onboard_mass();
+    control_state get_state();
+    void load_cargo(double);
+    void remove_cargo(double);
     
     // State Machine Next-State Functions
     void home_next_state_logic();

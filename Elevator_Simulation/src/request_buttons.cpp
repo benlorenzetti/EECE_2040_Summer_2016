@@ -122,6 +122,10 @@ dest_buttons::dest_buttons() {
   stop_requests.clear();
 }
 
+void dest_buttons::request_stop(int floor_number) {
+  stop_requests.insert(floor_number);
+}
+
 void dest_buttons::clear_all() {
   stop_requests.clear();
 }

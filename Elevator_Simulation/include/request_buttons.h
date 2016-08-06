@@ -29,9 +29,9 @@
 
 class hall_buttons {
   public:
-    /*  param1: a list of floors which will have call buttons
-        param2: list size */
-    hall_buttons(const int*, unsigned int);
+    /*  param1: lowest floor number
+        param2: top floor number */
+    hall_buttons(int, int);
     /*  The next four functions allow humans and car_controllers to
         interface with the internal sets of service requests.
         @param1: a floor number */

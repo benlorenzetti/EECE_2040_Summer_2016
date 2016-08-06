@@ -60,6 +60,8 @@ typedef struct {
     @param3: top floor number                                      */
 void fill_new_passenger(passenger *, int , int);
 
+class hall_queues; // forward declaration...
+
 class elevator_car : public car_controller {
   private:
     std::vector<passenger> onboard;
@@ -67,7 +69,7 @@ class elevator_car : public car_controller {
   public:
     elevator_car(
       std::string name, // name for this car
-      hall_buttons *,   // building interface buttons this car should connect to
+      hall_queues *,    // set of vertically repeating hall queues for this car
       int,              // the home floor
       double,           // floor height
       elevator_model car_model // machine specs such as max speed, max mass, etc.
@@ -80,3 +82,20 @@ class elevator_car : public car_controller {
     int disembark(std::deque<passenger> *);
 };
 
+class hall_queues : public hall_buttons {
+  public:
+    hall_queues(int, int);
+    /*  Push a new passenger to the back of their origin_floors queue
+        @param1: passenger to copy                                 */
+    void all_floors_push_passenger(passenger);
+    /*  Iterate through all of the registered elevator cars and pop
+        people off the queue where car is stopped and traveling in
+        the correct direction. If queue is not completely emptied
+        into a stopped car, reactivate the call button.            */
+    void all_floors_try_to_board();
+    void register_car_function_for_car_constructor(elevator_car *);
+  private:
+    std::vector<elevator_car *> cars;
+    std::vector<std::queue<passenger> > up_queues;
+    std::vector<std::queue<passenger> > down_queues;
+};

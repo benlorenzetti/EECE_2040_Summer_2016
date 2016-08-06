@@ -7,12 +7,12 @@
 #include <set>
 using namespace std;
 
-hall_buttons::hall_buttons(const int* floors_list, unsigned int list_size) {
+hall_buttons::hall_buttons(int bottom_floor, int top_floor) {
   serviced_floors.clear();
   up_calls.clear();
   down_calls.clear();
-  for(int i = 0; i < list_size; i++)
-    serviced_floors.insert(floors_list[i]);
+  for(int i = bottom_floor; i <= top_floor; i++)
+    serviced_floors.insert(i);
 }
 
 void hall_buttons::request_up(int floor_number) {

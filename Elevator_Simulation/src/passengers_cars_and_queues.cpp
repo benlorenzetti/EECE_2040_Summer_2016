@@ -32,13 +32,14 @@ void fill_new_passenger(passenger *p, int bottom_floor, int top_floor) {
 
 elevator_car::elevator_car(
   string name,
-  hall_buttons *interface,
+  hall_queues *interface,
   int home_floor,
   double floor_height,
   elevator_model car_model
 )
-: car_controller(name, interface, home_floor, floor_height, car_model)
+: car_controller(name, static_cast<hall_buttons*>(interface), home_floor, floor_height, car_model)
 {
+  interface->register_car_function_for_car_constructor(this);
   onboard.clear();
   onboard_soft_cap = (int) car_model.max_cargo_mass / 90.0;
 }
@@ -83,4 +84,63 @@ int elevator_car::disembark(deque<passenger> *passenger_history) {
     }
   }
   return count;
+}
+
+hall_queues::hall_queues(int bottom_floor, int top_floor)
+: hall_buttons(bottom_floor, top_floor)
+{
+  for(int i = bottom_floor; i <= top_floor; i++) {
+    up_queues.push_back(queue<passenger>());
+    down_queues.push_back(queue<passenger>());
+  }
+}
+
+void hall_queues::all_floors_push_passenger(passenger new_pass) {
+  int rel_origin, rel_dest;
+  rel_origin = new_pass.origin_floor - get_bottom();
+  // Add passenger to the correct queue and
+  // Press the correct hall call button to summon a car
+  if(new_pass.dest_floor < new_pass.origin_floor) {
+    down_queues.at(rel_origin).push(new_pass);
+    request_down(new_pass.origin_floor);
+  }
+  else {
+    up_queues.at(rel_origin).push(new_pass);
+    request_up(new_pass.origin_floor);
+  }
+}
+
+void hall_queue::all_floors_try_to_board() {
+  // Outer Loop is for each floor
+  int floor_index, floor
+  for(floor = get_bottom(); floor <= get_top(); floor++) {
+    floor_index = floor - get_bottom();
+    // Inner Loop is for each car
+    int car_index;
+    for(car_index = 0; car_index < cars.size(); car_index++) {
+      if(cars[car_index]->up_arrival()) {
+        while(!cars[car_index]->full() && !up_queues[floor_index].empty()) {
+          cars[cars_index]->board(up_queues[floor_index].front());
+          up_queues[floor_index].pop();
+        }
+        // If the car was too full, call another car
+        if(!up_queues[floor_index].empty())
+          request_up(floor);
+      }
+      if(cars[car_index]->down_arrival()) {
+        while(!cars[car_index]->full() && !down_queues[floor_index].empty()) {
+          cars[car_index]->board(down_queues[floor_index].front());
+          down_queues[floor_index].pop();
+        }
+        // If the car was too full, call another car
+        if(!down_queues[floor_index].empty())
+          request_down(floor);
+      }
+    }// end inner loop (for each car)
+  }  // end outer loop (for each floor)
+  
+}
+
+void hall_queues::register_car_function_for_car_constructor(elevator_car *car) {
+  cars.push_back(car);
 }

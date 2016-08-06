@@ -15,17 +15,20 @@ const elevator_model SUPER_FUJIOATS = {
 
 int main() {
   // Initialize the hallway interface object for the ERC elevators
-  int erc_floors[6] = {3, 4, 5, 6, 7, 8};
-  hall_buttons erc_buttons(erc_floors, sizeof(erc_floors));
+  hall_queues erc_halls(3, 8);
 
   // Initialize two elevator cars connected to the ERC hallway buttons
-  elevator_car car1("car1", &erc_buttons, 4, FLOOR_HEIGHT, SUPER_FUJIOATS);
-  elevator_car car2("car2", &erc_buttons, 6, FLOOR_HEIGHT, SUPER_FUJIOATS);
+  elevator_car car1("car1", &erc_halls, 4, FLOOR_HEIGHT, SUPER_FUJIOATS);
+  elevator_car car2("car2", &erc_halls, 6, FLOOR_HEIGHT, SUPER_FUJIOATS);
 
-  passenger new_pass;
-  fill_new_passenger(&new_pass, 3, 8);
-  cout << "new_pass origin = " << new_pass.origin_floor << ", dest = " << new_pass.dest_floor << endl;
-  car1.board(new_pass);
+  // Generate some new passengers with random origin and dest floors
+  passenger temp;
+  for(int i = 0; i < 3; i++) {
+    fill_new_passenger(&temp, 3, 8);
+    cout << "passenger " << temp.id << " traveling from " << temp.origin_floor
+      << " to " << temp.dest_floor << endl;
+    erc_halls.push_passenger(temp);
+  }
 
   int count = 0;
   for(int i=0; i<5000; i++) {
